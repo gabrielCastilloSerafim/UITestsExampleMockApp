@@ -1,0 +1,16 @@
+default_platform(:ios)
+
+platform :ios do
+
+  desc "Runs app UI tests"
+
+  lane :tests do
+     
+     run_tests(
+        project: "./MockAppUI.xcodeproj",
+        devices: ["iPhone 14"]
+     )
+
+  end
+
+end
