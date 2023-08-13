@@ -14,6 +14,7 @@ final class MockAppUITests: XCTestCase {
     override func setUpWithError() throws {
         
         continueAfterFailure = false
+        XCUIDevice.shared.orientation = .portrait
     }
 
     override func tearDownWithError() throws {
@@ -64,7 +65,7 @@ final class MockAppUITests: XCTestCase {
         
         //MARK: Check if login succeeded
         let loginSuccessLabel = app.staticTexts["Login Success!"]
-        XCTAssertTrue(loginSuccessLabel.exists)
+        XCTAssertTrue(loginSuccessLabel.exists, UITestErrors.networkFailedOrTimeOut.rawValue)
     }
     
     func testLoginFlowFail() throws {
@@ -111,7 +112,7 @@ final class MockAppUITests: XCTestCase {
         
         //MARK: Check if login failed
         let loginSuccessLabel = app.staticTexts["Login Success!"]
-        XCTAssertFalse(loginSuccessLabel.exists)
+        XCTAssertFalse(loginSuccessLabel.exists, UITestErrors.networkFailedOrTimeOut.rawValue)
     }
 
     func testLaunchPerformance() throws {
@@ -126,5 +127,6 @@ final class MockAppUITests: XCTestCase {
     enum UITestErrors: String {
         
         case couldNotFindUIElement = "Could not find the UIElement, please check property name or title"
+        case networkFailedOrTimeOut = "The network call failed to get a response or hit timeOut"
     }
 }
