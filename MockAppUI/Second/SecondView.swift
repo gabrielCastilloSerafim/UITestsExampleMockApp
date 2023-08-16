@@ -20,6 +20,9 @@ class SecondView: UIViewController {
         label.textColor = .white
         label.font = .systemFont(ofSize: 16, weight: .black)
         label.textAlignment = .center
+        
+        label.accessibilityIdentifier = "secondScreenLabel"
+        
         return label
     }()
 

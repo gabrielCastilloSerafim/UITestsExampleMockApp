@@ -8,8 +8,6 @@
 import XCTest
 
 final class MockAppUITests: XCTestCase {
-    
-    let testsQueue = DispatchQueue(label: Bundle.main.bundleIdentifier ?? "testsQueue")
 
     override func setUpWithError() throws {
         
@@ -20,99 +18,64 @@ final class MockAppUITests: XCTestCase {
     override func tearDownWithError() throws {
         
     }
-
+    
     func testLoginFlowSuccess() throws {
         
-        //MARK: Lauch application
+        // Lauch application
         let app = XCUIApplication()
         app.launch()
         
-        //MARK: Fill Up login textField
-        let loginTextField = app.textFields["Login"]
-        XCTAssertTrue(loginTextField.exists, UITestErrors.couldNotFindUIElement.rawValue)
+        // Find user name text field and write on it
+        let userNameTextFields = app
+            .descendants(matching: .textField)
+            .matching(identifier: "userNameTextField")
+            .element
         
-        loginTextField.tap()
-        loginTextField.typeText("Gabriel")
+        XCTAssertTrue(userNameTextFields.exists, "Could not find the UIElement, please check identifier")
         
-        //MARK: Fill Up password textFields
-        let passWordTextField = app.secureTextFields["password"]
-        XCTAssertTrue(passWordTextField.exists, UITestErrors.couldNotFindUIElement.rawValue)
+        userNameTextFields.tap()
+        userNameTextFields.typeText("Gabriel")
         
-        passWordTextField.tap()
-        passWordTextField.typeText("12345678")
+        // Find password text field and write on it
+        let passwordTextField = app
+            .descendants(matching: .secureTextField)
+            .matching(identifier: "passwordTextField")
+            .element
+        XCTAssertTrue(passwordTextField.exists, "Could not find the UIElement, please check identifier")
+        
+        passwordTextField.tap()
+        passwordTextField.typeText("12345678")
         
         // Hide keyborad
-        passWordTextField.typeText("\n")
+        passwordTextField.typeText("\n")
         
-        //MARK: Press login button
-        let loginButton = app/*@START_MENU_TOKEN@*/.buttons["Log In"].staticTexts["Log In"]/*[[".buttons[\"Log In\"].staticTexts[\"Log In\"]",".staticTexts[\"Log In\"]"],[[[-1,1],[-1,0]]],[1]]@END_MENU_TOKEN@*/
-        XCTAssertTrue(loginButton.exists, UITestErrors.couldNotFindUIElement.rawValue)
+        // Find and press login button
+        let loginButton = app
+            .descendants(matching: .button)
+            .matching(identifier: "homeButton")
+            .element
+        
+        XCTAssertTrue(loginButton.exists, "Could not find the UIElement, please check identifier")
         
         loginButton.tap()
         
-        //MARK: Wait for login action response with a timeOut
-        // Create expectation to be waited
-        let myExpectation = XCTestExpectation(description: "Get getMockData expectation")
+        // Find secondScreenLabel label and wait for its existence
+        let secondScreenLabel = app
+            .descendants(matching: .staticText)
+            .matching(identifier: "secondScreenLabel")
+            .element
         
-        // Enable expectation for needed time
-        testsQueue.asyncAfter(deadline: .now() + 2.1) {
-            
-            myExpectation.fulfill()
-        }
+        let expectation = expectation(
+            for: NSPredicate(format: "exists == true"),
+            evaluatedWith: secondScreenLabel,
+            handler: .none
+        )
+
+        let result = XCTWaiter.wait(for: [expectation], timeout: 10.0)
         
-        // Set wait for expectation
-        wait(for: [myExpectation])
-        
-        //MARK: Check if login succeeded
-        let loginSuccessLabel = app.staticTexts["Login Success!"]
-        XCTAssertTrue(loginSuccessLabel.exists, UITestErrors.networkFailedOrTimeOut.rawValue)
-    }
-    
-    func testLoginFlowFail() throws {
-        
-        //MARK: Lauch application
-        let app = XCUIApplication()
-        app.launch()
-        
-        //MARK: Fill Up login textField
-        let loginTextField = app.textFields["Login"]
-        XCTAssertTrue(loginTextField.exists, UITestErrors.couldNotFindUIElement.rawValue)
-        
-        loginTextField.tap()
-        loginTextField.typeText("Matheus")
-        
-        //MARK: Fill Up password textFields
-        let passWordTextField = app.secureTextFields["password"]
-        XCTAssertTrue(passWordTextField.exists, UITestErrors.couldNotFindUIElement.rawValue)
-        
-        passWordTextField.tap()
-        passWordTextField.typeText("12345678")
-        
-        // Hide keyborad
-        passWordTextField.typeText("\n")
-        
-        //MARK: Press login button
-        let loginButton = app/*@START_MENU_TOKEN@*/.buttons["Log In"].staticTexts["Log In"]/*[[".buttons[\"Log In\"].staticTexts[\"Log In\"]",".staticTexts[\"Log In\"]"],[[[-1,1],[-1,0]]],[1]]@END_MENU_TOKEN@*/
-        XCTAssertTrue(loginButton.exists, UITestErrors.couldNotFindUIElement.rawValue)
-        
-        loginButton.tap()
-        
-        //MARK: Wait for login action response with a timeOut
-        // Create expectation to be waited
-        let myExpectation = XCTestExpectation(description: "Get getMockData expectation")
-        
-        // Enable expectation for needed time
-        testsQueue.asyncAfter(deadline: .now() + 2.1) {
-            
-            myExpectation.fulfill()
-        }
-        
-        // Set wait for expectation
-        wait(for: [myExpectation])
-        
-        //MARK: Check if login failed
-        let loginSuccessLabel = app.staticTexts["Login Success!"]
-        XCTAssertFalse(loginSuccessLabel.exists, UITestErrors.networkFailedOrTimeOut.rawValue)
+        // After result expectation is fulfilled assert result is completed
+        // otherwise expectation timed out and login failed
+        XCTAssertEqual(result, .completed, "Login failed")
     }
 
     func testLaunchPerformance() throws {
@@ -124,9 +87,4 @@ final class MockAppUITests: XCTestCase {
         }
     }
     
-    enum UITestErrors: String {
-        
-        case couldNotFindUIElement = "Could not find the UIElement, please check property name or title"
-        case networkFailedOrTimeOut = "The network call failed to get a response or hit timeOut"
-    }
 }

@@ -19,6 +19,9 @@ class HomeView: UIViewController {
         textField.placeholder = "Login"
         textField.backgroundColor = .lightGray.withAlphaComponent(0.25)
         textField.delegate = self
+        
+        textField.accessibilityIdentifier = "userNameTextField"
+        
         return textField
     }()
     
@@ -27,6 +30,9 @@ class HomeView: UIViewController {
         textField.placeholder = "password"
         textField.isSecureTextEntry = true
         textField.backgroundColor = .lightGray.withAlphaComponent(0.25)
+        
+        textField.accessibilityIdentifier = "passwordTextField"
+        
         textField.delegate = self
         return textField
     }()
@@ -38,6 +44,9 @@ class HomeView: UIViewController {
         button.backgroundColor = .black
         button.titleLabel?.textColor = .white
         button.titleLabel?.font = .systemFont(ofSize: 14, weight: .bold)
+        
+        button.accessibilityIdentifier = "homeButton"
+        
         return button
     }()
     
